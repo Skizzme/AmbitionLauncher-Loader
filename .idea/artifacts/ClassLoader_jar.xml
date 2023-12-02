@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ClassLoader:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ClassLoader_jar</output-path>
+    <root id="archive" name="ClassLoader.jar">
+      <element id="module-output" name="ClassLoader" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../Libraries/gson-2.2.4.jar" path-in-jar="/" />
+      <element id="library" level="application" name="natives" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../Ambition-Client/lib/jars/commons-codec-1.9.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
