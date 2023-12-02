@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import me.skizzme.cloud.socket.api.IPacketHandler;
 import me.skizzme.cloud.socket.packet.Packet;
 import me.skizzme.loader.AClassLoader;
+import me.skizzme.loader.AssetLoader;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -29,6 +30,9 @@ public class ClassHandler extends IPacketHandler {
     @Override
     public void receive(final Packet p)
     {
+        if (p.getId() == 0x48) {
+            AssetLoader.downloadAssets(p.jsonBody().getAsJsonObject("asset_index"));
+        }
         if (p.getId() == 0x49) {
             this.totalObjects = p.jsonBody().get("total_size").getAsLong();
         }

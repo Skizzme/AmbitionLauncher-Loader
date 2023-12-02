@@ -2,50 +2,41 @@ package me.skizzme.loader;
 
 import me.skizzme.Launcher;
 import me.skizzme.Main;
+import me.skizzme.util.FileManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NativeLoader {
 
-    private ArrayList<String> natives = new ArrayList<>();
+    private CopyOnWriteArrayList<String> natives = new CopyOnWriteArrayList<>();
 
     public void registerNative(String p) {
         natives.add(p);
     }
 
     public void loadNatives() throws IOException {
-        String tDir = System.getProperty("java.io.tmpdir");
-        File nativesFolder = new File(tDir + "\\natives_a");
-        if (!nativesFolder.exists()) {
-            nativesFolder.mkdirs();
-        }
+        String nativesPath = FileManager.getPath("natives");
         for (String p : natives) {
-            InputStream in = Main.launcher.getClassLoader().getResourceAsStream(p);
-            if (in == null) {
+            byte[] bytes = Main.launcher.getClassLoader().getResourceBytes(p);
+            if (bytes == null) {
                 System.out.println("Native " + p + " was not found.");
                 continue;
             }
-            System.out.println("Loaded native \"" + p + "\"");
-            byte[] buffer = new byte[1024];
             String[] split = p.split("/");
-            File temp = new File(nativesFolder + "\\" + split[split.length-1]);
-            if (temp.exists()) continue;
-            FileOutputStream fos = new FileOutputStream(temp);
-
-            int read;
-            while((read = in.read(buffer)) != -1) {
-                fos.write(buffer, 0, read);
+            String nativePath = FileManager.getPath("natives", split[split.length-1]);
+            if (FileManager.doesFileExist(nativePath)) {
+                continue;
             }
-            fos.close();
-            in.close();
-            temp.deleteOnExit();
+            FileManager.writeFile(nativePath, bytes);
+            System.out.println("Loaded native \"" + p + "\"");
         }
 
-        System.setProperty("org.lwjgl.librarypath", nativesFolder.getAbsolutePath());
+        System.setProperty("org.lwjgl.librarypath", nativesPath);
     }
 
 }

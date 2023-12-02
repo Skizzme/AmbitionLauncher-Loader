@@ -3,10 +3,13 @@ package me.skizzme;
 import me.skizzme.cloud.CloudManager;
 import me.skizzme.cloud.socket.handlers.ClassHandler;
 import me.skizzme.cloud.socket.packet.Packet;
+import me.skizzme.loader.AssetLoader;
 import me.skizzme.loader.NativeLoader;
 import me.skizzme.loader.AClassLoader;
-import me.skizzme.util.TempManager;
+import me.skizzme.util.FileManager;
 import me.skizzme.util.ThreadUtils;
+
+import java.util.Arrays;
 
 public class Launcher {
 
@@ -18,7 +21,8 @@ public class Launcher {
 
     public void init(boolean verbose) {
         System.out.println("Initializing...");
-        TempManager.clearOld();
+        FileManager.setup();
+        System.out.println(FileManager.getPath("assets"));
         this.verbose = verbose;
         this.nativeLoader = new NativeLoader();
         this.classLoader = new AClassLoader(verbose);
@@ -57,18 +61,31 @@ public class Launcher {
             }
             System.out.println();
             System.out.println("Done. Elapsed: " + ((int) ((System.currentTimeMillis() - st) / 100)) / 10f);
-            System.out.println("Writing temp natives");
+            System.out.println("Writing natives");
             this.nativeLoader.loadNatives();
+            System.out.println("Waiting for assets to download...");
+            AssetLoader.waitForDownload();
             System.out.println("Starting..");
-            if (args.length == 0) {
-                classLoader.getClass("Start").getMethod("main", String[].class).invoke(null, (Object) new String[0]);
-            } else {
-                classLoader.getClass("net.minecraft.client.main.Main").getMethod("main", String[].class).invoke(null, (Object) args);
-            }
-            TempManager.exit();
+//            if (args.length == 0) {
+//                classLoader.getClass("Start").getMethod("main", String[].class).invoke(null, (Object) new String[0]);
+//            } else {
+            classLoader.getClass("net.minecraft.client.main.Main").getMethod("main", String[].class).invoke(null, (Object) concat(args, new String[] {
+                    "--version", "1.8",
+                    "--accessToken", "0",
+                    "--gameDir", FileManager.PATH + "\\",
+                    "--assetsDir", FileManager.getPath("assets"),
+                    "--assetIndex", "1.8"}));
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static <T> T[] concat(T[] first, T[] second) // definitely not straight from Start class
+    {
+        T[] result = Arrays.copyOf(first, first.length + second.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
+        return result;
     }
 
 }

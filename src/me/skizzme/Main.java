@@ -1,5 +1,7 @@
 package me.skizzme;
 
+import me.skizzme.util.FileManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

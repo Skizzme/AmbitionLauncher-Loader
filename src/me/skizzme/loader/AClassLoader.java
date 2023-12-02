@@ -1,7 +1,7 @@
 package me.skizzme.loader;
 
 import me.skizzme.Main;
-import me.skizzme.util.TempManager;
+import me.skizzme.util.FileManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -40,6 +40,10 @@ public class AClassLoader extends ClassLoader {
         if (verbose) System.out.println("Cached resource \"" + path + "\"");
     }
 
+    public byte[] getResourceBytes(String path) {
+        return this.resourceCache.getOrDefault(path, null);
+    }
+
 //    @Override
 //    public URL getResource(String name) {
 //        System.out.println("f31: " + name);
@@ -69,12 +73,11 @@ public class AClassLoader extends ClassLoader {
     protected URL findResource(String name) {
         try {
             if (verbose) System.out.println("Finding resource with name \"" + name + "\"");
-            String ex = TempManager.getFile(name);
-            if (ex == null) {
-                return new URL("file:\\" + TempManager.writeTempFile(name, this.resourceCache.get(name)));
-            } else {
-                return new URL("file:\\" + ex);
+            String path = FileManager.getPath("resources", name);
+            if (!FileManager.doesFileExist(path)) {
+                FileManager.writeFile(path, this.resourceCache.get(name));
             }
+            return new URL("file:\\" + path);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
