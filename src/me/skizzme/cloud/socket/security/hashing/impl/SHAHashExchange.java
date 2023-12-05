@@ -14,6 +14,25 @@ public final class SHAHashExchange implements IHashExchange
 
     private static final String ALGORITHM = "SHA-512";
 
+
+    public String hash(final byte[] data)
+    {
+        if (data == null)
+            return null;
+
+        try
+        {
+            final MessageDigest messageDigest = MessageDigest.getInstance(ALGORITHM);
+            return Base64.getEncoder().encodeToString(messageDigest.digest(data));
+        }
+        catch (final Exception exception)
+        {
+            exception.printStackTrace();
+        }
+
+        return null;
+    }
+
     @Override
     public String hash(final String data)
     {

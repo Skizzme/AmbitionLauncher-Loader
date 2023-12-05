@@ -1,8 +1,11 @@
 package me.skizzme.cloud;
 
+import me.skizzme.Main;
 import me.skizzme.cloud.socket.PacketHandler;
 import me.skizzme.cloud.socket.Socket;
 import me.skizzme.cloud.socket.security.hashing.impl.SHAHashExchange;
+import me.skizzme.util.FileManager;
+import sun.security.provider.SHA;
 
 public class CloudManager {
 
