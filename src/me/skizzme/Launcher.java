@@ -1,5 +1,8 @@
 package me.skizzme;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import me.skizzme.cloud.CloudManager;
 import me.skizzme.cloud.socket.handlers.ClassHandler;
 import me.skizzme.cloud.socket.packet.Packet;
@@ -18,6 +21,7 @@ public class Launcher {
     private CloudManager cloudManager;
     private ClassHandler classHandler;
     private boolean verbose;
+    private long bytesRead;
 
     public void init(boolean verbose) {
         System.out.println("Initializing...");
@@ -46,12 +50,27 @@ public class Launcher {
         }
     }
 
+    public boolean hasGottenAll() {
+        return this.classHandler.gotAll;
+    }
+
+    public void updateBytesRead(long bytesRead) {
+        this.bytesRead+=bytesRead;
+    }
+
     public void start(String[] args) {
         try {
             this.classLoader.cachedObjects = 0;
             long st = System.currentTimeMillis();
             System.out.println("Downloading...");
-            cloudManager.getHandler().sendPacket(new Packet(0x50, ""));
+
+            JsonObject body = new JsonObject();
+            JsonArray natives = new JsonArray();
+            for (String s : nativeLoader.getExistingNatives()) {
+                natives.add(new JsonPrimitive(s));
+            }
+            body.add("natives", natives);
+            cloudManager.getHandler().sendPacket(new Packet(0x50, body));
 
             while (!this.classHandler.gotAll) {
                 if (!verbose) {
@@ -69,13 +88,14 @@ public class Launcher {
 //            if (args.length == 0) {
 //                classLoader.getClass("Start").getMethod("main", String[].class).invoke(null, (Object) new String[0]);
 //            } else {
-            classLoader.getClass("net.minecraft.client.main.Main").getMethod("main", String[].class).invoke(null, (Object) concat(args, new String[] {
+//            classLoader.getClass("me.skizzme.Main").getMethod("main", String[].class).invoke(null, (Object) new String[0]);
+//            this.cloudManager.getSocket()
+            classLoader.getClass("net.minecraft.client.main.Main").getMethod("main", String[].class).invoke(null, (Object) concat(args, new String[]{
                     "--version", "1.8",
                     "--accessToken", "0",
                     "--gameDir", FileManager.PATH + "\\",
                     "--assetsDir", FileManager.getPath("assets"),
                     "--assetIndex", "1.8"}));
-//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

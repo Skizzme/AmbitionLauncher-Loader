@@ -3,8 +3,21 @@ package me.skizzme.cloud;
 import me.skizzme.Main;
 import me.skizzme.cloud.socket.PacketHandler;
 import me.skizzme.cloud.socket.Socket;
+import me.skizzme.cloud.socket.packet.Packets;
 import me.skizzme.cloud.socket.security.hashing.impl.SHAHashExchange;
+import me.skizzme.hwid.HwidFactory;
+import me.skizzme.hwid.component.impl.misc.ComputerNameHwidComponent;
+import me.skizzme.hwid.component.impl.os.OSArchHwidComponent;
+import me.skizzme.hwid.component.impl.os.OSNameHwidComponent;
+import me.skizzme.hwid.component.impl.os.OSVersionHwidComponent;
+import me.skizzme.hwid.component.impl.processor.ProcessorArchHwidComponent;
+import me.skizzme.hwid.component.impl.processor.ProcessorCountHwidComponent;
+import me.skizzme.hwid.component.impl.processor.ProcessorIdHwidComponent;
+import me.skizzme.hwid.component.impl.processor.ProcessorLevelHwidComponent;
+import me.skizzme.hwid.component.impl.user.UserDomainHwidComponent;
+import me.skizzme.hwid.component.impl.user.UserNameHwidComponent;
 import me.skizzme.util.FileManager;
+import me.skizzme.util.JsonBuilder;
 import sun.security.provider.SHA;
 
 public class CloudManager {
@@ -42,7 +55,21 @@ public class CloudManager {
     }
     public static String getHWID()
     {
-        return SHAHashExchange.INSTANCE.hash(System.getProperty("user.name"));
+        final HwidFactory factory = new HwidFactory()
+                .insert(
+                        new ComputerNameHwidComponent(),
+                        new UserNameHwidComponent(),
+                        new UserDomainHwidComponent(),
+                        new ProcessorIdHwidComponent(),
+                        new ProcessorArchHwidComponent(),
+                        new ProcessorLevelHwidComponent(),
+                        new ProcessorCountHwidComponent(),
+                        new OSNameHwidComponent(),
+                        new OSArchHwidComponent(),
+                        new OSVersionHwidComponent()
+                );
+
+       return factory.generate(true);
     }
 
 }

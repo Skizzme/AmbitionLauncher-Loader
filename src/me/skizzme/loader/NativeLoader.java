@@ -8,7 +8,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NativeLoader {
@@ -37,6 +40,19 @@ public class NativeLoader {
         }
 
         System.setProperty("org.lwjgl.librarypath", nativesPath);
+    }
+
+    public ArrayList<String> getExistingNatives() {
+        ArrayList<String> existing = new ArrayList<>();
+        String nativesPath = FileManager.getPath("natives") + File.separator;
+        File f = new File(nativesPath);
+        File[] files = f.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                existing.add(file.getName());
+            }
+        }
+        return existing;
     }
 
 }

@@ -35,6 +35,7 @@ public class ClassHandler extends IPacketHandler {
         }
         if (p.getId() == 0x49) {
             this.totalObjects = p.jsonBody().get("total_size").getAsLong();
+            System.out.println("tot:" + this.totalObjects);
         }
         if (p.getId() == 0x50) {
             executor.execute(() -> {

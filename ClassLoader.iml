@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="gson-2.2.4" level="application" />
+    <orderEntry type="library" name="bcprov-ext-jdk18on-177" level="project" />
   </component>
 </module>

@@ -1,13 +1,19 @@
 package me.skizzme.loader;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import me.skizzme.Main;
 import me.skizzme.util.FileManager;
+import me.skizzme.util.ThreadUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -22,6 +28,10 @@ public class AClassLoader extends ClassLoader {
     public AClassLoader(boolean verbose) {
         super(AClassLoader.class.getClassLoader());
         this.verbose = verbose;
+    }
+
+    public boolean doesClassExist(String key) {
+        return classCache.containsKey(key);
     }
 
     public void cacheClass(String binaryName, byte[] data) {
@@ -58,8 +68,8 @@ public class AClassLoader extends ClassLoader {
 //
     @Override
     public InputStream getResourceAsStream(String name) {
-        if (verbose) System.out.println("Getting resource \"" + name + "\"");
         String modNamed = name.replaceAll("\\\\", "/").toLowerCase();
+        if (verbose) System.out.println("Getting resource \"" + name + "\" " + this.resourceCache.containsKey(modNamed));
         if (this.resourceCache.containsKey(modNamed)) {
             byte[] resource_bytes = this.resourceCache.get(modNamed);
             if (resource_bytes != null) {

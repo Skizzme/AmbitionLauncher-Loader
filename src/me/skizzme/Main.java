@@ -3,11 +3,13 @@ package me.skizzme;
 import me.skizzme.cloud.CloudManager;
 import me.skizzme.cloud.socket.security.hashing.impl.SHAHashExchange;
 import me.skizzme.util.FileManager;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +20,7 @@ public class Main {
     public static Launcher launcher;
 
     public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, URISyntaxException {
+        Security.addProvider(new BouncyCastleProvider());
         boolean verbose = false;
         if (args.length > 0) {
             String[] newArgs = new String[args.length-1];
